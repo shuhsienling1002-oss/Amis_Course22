@@ -68,7 +68,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- 2. 資料庫 (Unit 22: User Fix & CSV Verified) ---
+# --- 2. 資料庫 (Unit 22: Moedict Vocabulary) ---
 vocab_data = [
     {"amis": "Kakaenen", "chi": "食物 / 糧食", "icon": "🍱", "source": "Moedict: kakaenen"},
     {"amis": "Hemay", "chi": "飯 / 米飯", "icon": "🍚", "source": "Moedict: hemay"},
@@ -86,7 +86,7 @@ vocab_data = [
     {"amis": "Mafecol", "chi": "飽", "icon": "😌", "source": "CSV Row 1465"}, # 修正
 ]
 
-# --- 句子庫 (嚴格源自 CSV 並移除連字號) ---
+# --- 句子庫 (7句: 嚴格源自 CSV 並移除連字號) ---
 sentences = [
     {"amis": "Komaen ca mama to hemay.", "chi": "爸爸他們吃飯。", "icon": "🍚", "source": "Row 2 (Cleaned)"},
     {"amis": "Mafecolto kiso haw?", "chi": "你吃飽了嗎？", "icon": "😌", "source": "Row 1465 (Cleaned)"},
@@ -97,7 +97,7 @@ sentences = [
     {"amis": "Midimata' ca ina to kakaenen.", "chi": "媽媽他們挑著食物。", "icon": "🍱", "source": "Row 447 (Cleaned)"},
 ]
 
-# --- 3. 隨機題庫 (Moedict & CSV Verified) ---
+# --- 3. 隨機題庫 (Synced) ---
 raw_quiz_pool = [
     {
         "q": "Mafecolto kiso haw?",
@@ -149,11 +149,11 @@ raw_quiz_pool = [
         "hint": "豬肉、牛肉都是 Titi"
     },
     {
-        "q": "Minanom cangra.",
-        "audio": "Minanom cangra",
-        "options": ["他們喝水", "他們吃飯", "他們洗澡"],
-        "ans": "他們喝水",
-        "hint": "Nanom (水) -> Minanom (喝水)"
+        "q": "單字測驗：^epah",  # 修正此處
+        "audio": "^epah",
+        "options": ["酒", "水", "茶"],
+        "ans": "酒",
+        "hint": "喝了會醉 (Moedict/CSV)"
     }
 ]
 
@@ -177,7 +177,7 @@ if 'init' not in st.session_state:
 
 # --- 5. 主介面 ---
 st.markdown("<h1 style='text-align: center; color: #E65100;'>Unit 22: O Kakaenen</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #666;'>食物與飲食 (User Fix)</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #666;'>食物與飲食 (User Corrected)</p>", unsafe_allow_html=True)
 
 tab1, tab2 = st.tabs(["📚 詞彙與句型", "🎲 隨機挑戰"])
 
