@@ -68,14 +68,14 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- 2. 資料庫 (Unit 22: 14個單字 - Moedict Verified) ---
+# --- 2. 資料庫 (Unit 22: User Fix & CSV Verified) ---
 vocab_data = [
     {"amis": "Kakaenen", "chi": "食物 / 糧食", "icon": "🍱", "source": "Moedict: kakaenen"},
     {"amis": "Hemay", "chi": "飯 / 米飯", "icon": "🍚", "source": "Moedict: hemay"},
     {"amis": "Nanom", "chi": "水", "icon": "💧", "source": "Moedict: nanom"},
     {"amis": "Titi", "chi": "肉", "icon": "🥩", "source": "Moedict: titi"},
     {"amis": "Dateng", "chi": "蔬菜 / 菜", "icon": "🥬", "source": "Moedict: dateng"},
-    {"amis": "Epah", "chi": "酒", "icon": "🍶", "source": "Moedict: epah"},
+    {"amis": "^epah", "chi": "酒", "icon": "🍶", "source": "CSV Row 517"}, # 修正
     {"amis": "Fita'ol", "chi": "蛋", "icon": "🥚", "source": "Moedict: fita'ol"},
     {"amis": "Heci", "chi": "果實 / 肉(果肉)", "icon": "🍎", "source": "Moedict: heci"},
     {"amis": "Komaen", "chi": "吃", "icon": "🥢", "source": "Moedict: komaen"},
@@ -83,42 +83,49 @@ vocab_data = [
     {"amis": "Miala", "chi": "拿 / 取", "icon": "🖐️", "source": "Moedict: miala"},
     {"amis": "Midimata'", "chi": "挑 / 扛 (重物)", "icon": "🏋️", "source": "Moedict: midimata'"},
     {"amis": "Macahiw", "chi": "餓", "icon": "😫", "source": "Moedict: macahiw"},
-    {"amis": "Maefec", "chi": "飽", "icon": "😌", "source": "Moedict: maefec"},
+    {"amis": "Mafecol", "chi": "飽", "icon": "😌", "source": "CSV Row 1465"}, # 修正
 ]
 
-# --- 句子庫 (7句: 嚴格源自 CSV 並移除連字號) ---
+# --- 句子庫 (嚴格源自 CSV 並移除連字號) ---
 sentences = [
-    {"amis": "Komaen ca mama to hemay.", "chi": "爸爸他們吃飯。", "icon": "🍚", "source": "CSV Row 2 (Cleaned)"},
-    {"amis": "Minanom cangra.", "chi": "他們喝水。", "icon": "💧", "source": "CSV Row 3 (Cleaned)"},
-    {"amis": "Mialaay ko wawa to titi.", "chi": "小孩正在拿豬肉。", "icon": "🥩", "source": "CSV Row 11 (Cleaned)"},
-    {"amis": "O maan ko kakaenen iso?", "chi": "你要吃的是什麼? (你想吃什麼?)", "icon": "❓", "source": "CSV Row 13 (Cleaned)"},
-    {"amis": "Macahiwto kora a wawa.", "chi": "那個小孩餓了 (想回家了)。", "icon": "😫", "source": "CSV Row 367 (Cleaned)"},
-    {"amis": "Midimata' ca ina to kakaenen.", "chi": "媽媽他們挑著食物。", "icon": "🍱", "source": "CSV Row 447 (Cleaned)"},
-    {"amis": "Miala ko wawa to titi.", "chi": "小孩拿豬肉。", "icon": "🖐️", "source": "CSV Row 17 (Cleaned)"},
+    {"amis": "Komaen ca mama to hemay.", "chi": "爸爸他們吃飯。", "icon": "🍚", "source": "Row 2 (Cleaned)"},
+    {"amis": "Mafecolto kiso haw?", "chi": "你吃飽了嗎？", "icon": "😌", "source": "Row 1465 (Cleaned)"},
+    {"amis": "Aka kakomaen to ^epah i papotal!", "chi": "不要在外面喝酒！", "icon": "🍶", "source": "Row 1837 (Cleaned)"},
+    {"amis": "Minanom cangra.", "chi": "他們喝水。", "icon": "💧", "source": "Row 3 (Cleaned)"},
+    {"amis": "Mialaay ko wawa to titi.", "chi": "小孩正在拿豬肉。", "icon": "🥩", "source": "Row 11 (Cleaned)"},
+    {"amis": "O maan ko kakaenen iso?", "chi": "你要吃的是什麼? (你想吃什麼?)", "icon": "❓", "source": "Row 13 (Cleaned)"},
+    {"amis": "Midimata' ca ina to kakaenen.", "chi": "媽媽他們挑著食物。", "icon": "🍱", "source": "Row 447 (Cleaned)"},
 ]
 
 # --- 3. 隨機題庫 (Moedict & CSV Verified) ---
 raw_quiz_pool = [
     {
-        "q": "Komaen ca mama to hemay.",
-        "audio": "Komaen ca mama to hemay",
-        "options": ["爸爸他們吃飯", "爸爸他們喝水", "爸爸他們煮飯"],
-        "ans": "爸爸他們吃飯",
-        "hint": "Komaen (吃) + Hemay (飯) (Row 2)"
+        "q": "Mafecolto kiso haw?",
+        "audio": "Mafecolto kiso haw",
+        "options": ["你吃飽了嗎？", "你餓了嗎？", "你喝水了嗎？"],
+        "ans": "你吃飽了嗎？",
+        "hint": "Mafecol 是飽 (Row 1465)"
+    },
+    {
+        "q": "Aka kakomaen to ^epah.",
+        "audio": "Aka kakomaen to ^epah",
+        "options": ["不要喝酒", "不要吃飯", "不要喝水"],
+        "ans": "不要喝酒",
+        "hint": "^epah 是酒 (Row 1837)"
     },
     {
         "q": "O maan ko kakaenen iso?",
         "audio": "O maan ko kakaenen iso",
         "options": ["你想吃什麼？", "你正在吃什麼？", "這是什麼食物？"],
         "ans": "你想吃什麼？",
-        "hint": "Kakaenen (要被吃的東西/食物) (Row 13)"
+        "hint": "Kakaenen (食物) (Row 13)"
     },
     {
         "q": "單字測驗：Dateng",
         "audio": "Dateng",
         "options": ["蔬菜", "肉", "蛋"],
         "ans": "蔬菜",
-        "hint": "綠色的食物 (Moedict)"
+        "hint": "綠色的食物"
     },
     {
         "q": "單字測驗：Midimata'",
@@ -128,32 +135,25 @@ raw_quiz_pool = [
         "hint": "用肩膀扛東西 (Row 447)"
     },
     {
-        "q": "Macahiwto kora a wawa.",
-        "audio": "Macahiwto kora a wawa",
-        "options": ["那個小孩餓了", "那個小孩飽了", "那個小孩哭了"],
-        "ans": "那個小孩餓了",
-        "hint": "Macahiw (餓) (Row 367)"
+        "q": "單字測驗：Macahiw",
+        "audio": "Macahiw",
+        "options": ["餓", "飽", "渴"],
+        "ans": "餓",
+        "hint": "想吃東西的感覺"
     },
     {
         "q": "單字測驗：Titi",
         "audio": "Titi",
         "options": ["肉", "飯", "酒"],
         "ans": "肉",
-        "hint": "豬肉、牛肉都是 Titi (Row 11)"
+        "hint": "豬肉、牛肉都是 Titi"
     },
     {
         "q": "Minanom cangra.",
         "audio": "Minanom cangra",
         "options": ["他們喝水", "他們吃飯", "他們洗澡"],
         "ans": "他們喝水",
-        "hint": "Nanom (水) -> Minanom (喝水) (Row 3)"
-    },
-    {
-        "q": "單字測驗：Epah",
-        "audio": "Epah",
-        "options": ["酒", "水", "茶"],
-        "ans": "酒",
-        "hint": "喝了會醉 (Moedict)"
+        "hint": "Nanom (水) -> Minanom (喝水)"
     }
 ]
 
@@ -177,7 +177,7 @@ if 'init' not in st.session_state:
 
 # --- 5. 主介面 ---
 st.markdown("<h1 style='text-align: center; color: #E65100;'>Unit 22: O Kakaenen</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #666;'>食物與飲食 (Food & Eating)</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #666;'>食物與飲食 (User Fix)</p>", unsafe_allow_html=True)
 
 tab1, tab2 = st.tabs(["📚 詞彙與句型", "🎲 隨機挑戰"])
 
