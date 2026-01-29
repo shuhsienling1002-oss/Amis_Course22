@@ -3,7 +3,7 @@ import time
 import random
 import os
 
-# --- 1. 核心相容性修復與音檔搜尋 ---
+# --- 1. 核心相容性修復 (模仿 Unit 18 架構) ---
 def safe_rerun():
     """自動判斷並執行重整"""
     try:
@@ -14,47 +14,53 @@ def safe_rerun():
         except:
             st.stop()
 
-# 建立檔案索引 (解決找不到檔案的問題)
+# --- 關鍵修正：全自動檔案搜尋系統 ---
 @st.cache_resource
-def get_audio_index():
-    """掃描所有資料夾，建立 {檔名: 路徑} 的索引"""
-    index = {}
-    # 從當前目錄開始往下找
+def get_audio_file_map():
+    """
+    掃描專案內『所有資料夾』，建立 {檔名: 完整路徑} 的對照表。
+    解決檔案放在子資料夾抓不到的問題。
+    """
+    file_map = {}
+    # 從當前目錄 (.) 開始，向下搜尋每一層資料夾
     for root, dirs, files in os.walk("."):
         for file in files:
-            if file.lower().endswith(('.m4a', '.mp3')):
-                index[file.lower()] = os.path.join(root, file)
-    return index
+            if file.lower().endswith(".m4a"):
+                # 記錄檔名(小寫)與完整路徑的對應
+                file_map[file.lower()] = os.path.join(root, file)
+    return file_map
 
 def safe_play_audio(filename):
     """
-    依照上傳範例的架構設計的播放函式
-    功能：自動在所有資料夾中尋找該檔案並播放
+    播放音檔的安全函式
+    1. 自動去地圖中找路徑
+    2. 如果找不到，顯示溫馨提示
     """
     if not filename:
         return
 
-    # 取得檔案索引
-    audio_index = get_audio_index()
-    target_file = filename.lower()
+    # 取得檔案地圖
+    audio_map = get_audio_file_map()
+    target_key = filename.lower()
 
-    if target_file in audio_index:
-        full_path = audio_index[target_file]
+    # 檢查檔案是否存在於地圖中
+    if target_key in audio_map:
+        full_path = audio_map[target_key]
         try:
             with open(full_path, "rb") as f:
                 audio_bytes = f.read()
             st.audio(audio_bytes, format='audio/mp4')
         except Exception as e:
-            st.error(f"播放錯誤: {e}")
+            st.error(f"播放失敗: {e}")
     else:
-        # 找不到檔案時顯示提示
+        # 找不到檔案時的處理
         st.warning(f"⚠️ 找不到音檔: {filename}")
-        st.caption("請確認檔案是否已上傳到專案資料夾中")
+        st.caption("請確認檔案是否已上傳到 GitHub 或專案資料夾中")
 
 # --- 0. 系統配置 ---
 st.set_page_config(page_title="Kaolahan 所喜歡的", page_icon="🍲", layout="centered")
 
-# --- CSS 美化 (改為暖色調以符合食物主題，但架構完全模仿您上傳的檔案) ---
+# --- CSS 美化 (改為暖橘色系，對應 Unit 18 的排版) ---
 st.markdown("""
     <style>
     body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
@@ -89,21 +95,20 @@ st.markdown("""
         background-color: #FFCCBC; color: #BF360C; border: 2px solid #FF7043; padding: 12px;
     }
     .stButton>button:hover { background-color: #FFAB91; border-color: #E64A19; }
-    
-    /* 進度條顏色 */
     .stProgress > div > div > div > div { background-color: #FF7043; }
     </style>
 """, unsafe_allow_html=True)
 
 # --- 2. 資料庫 (Kaolahan 內容) ---
+# 注意：dateng.m4a 和 kohaw.m4a 在您的上傳清單中缺席，這裡保留是為了完整性
 vocab_data = [
     {"amis": "Kaolahan", "chi": "所喜歡的", "icon": "❤️", "source": "核心單字", "audio": "kaolahan.m4a"},
     {"amis": "Facidol", "chi": "麵包樹果", "icon": "🍈", "source": "食材", "audio": "facidol.m4a"},
     {"amis": "Haca", "chi": "也 / 亦", "icon": "➕", "source": "連接詞", "audio": "haca.m4a"},
     {"amis": "Maemin", "chi": "全部 / 所有的", "icon": "💯", "source": "數量", "audio": "maemin.m4a"},
     {"amis": "Sikaen", "chi": "菜餚 / 配菜", "icon": "🍱", "source": "食物", "audio": "sikaen.m4a"},
-    {"amis": "Dateng", "chi": "菜 / 野菜", "icon": "🥬", "source": "食物", "audio": "dateng.m4a"},
-    {"amis": "Kohaw", "chi": "湯", "icon": "🍲", "source": "食物", "audio": "kohaw.m4a"},
+    {"amis": "Dateng", "chi": "菜 / 野菜", "icon": "🥬", "source": "食物", "audio": "dateng.m4a"}, # 缺檔
+    {"amis": "Kohaw", "chi": "湯", "icon": "🍲", "source": "食物", "audio": "kohaw.m4a"},   # 缺檔
     {"amis": "Mato’asay", "chi": "老人 / 長輩", "icon": "👵", "source": "人物", "audio": "matoasay.m4a"},
 ]
 
@@ -169,7 +174,7 @@ raw_quiz_pool = [
     }
 ]
 
-# --- 4. 狀態初始化 (完全保留原架構邏輯) ---
+# --- 4. 狀態初始化 (Unit 18 洗牌邏輯) ---
 if 'init' not in st.session_state:
     st.session_state.score = 0
     st.session_state.current_q_idx = 0
