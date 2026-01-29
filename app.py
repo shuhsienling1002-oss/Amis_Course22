@@ -3,7 +3,7 @@ import time
 import random
 import os
 
-# --- 1. 核心相容性修復 (模仿 Unit 18 架構) ---
+# --- 1. 核心功能 (嚴格遵照您的架構) ---
 def safe_rerun():
     """自動判斷並執行重整"""
     try:
@@ -14,53 +14,29 @@ def safe_rerun():
         except:
             st.stop()
 
-# --- 關鍵修正：全自動檔案搜尋系統 ---
-@st.cache_resource
-def get_audio_file_map():
+def play_local_audio(filename):
     """
-    掃描專案內『所有資料夾』，建立 {檔名: 完整路徑} 的對照表。
-    解決檔案放在子資料夾抓不到的問題。
+    播放指定路徑的音檔
+    路徑固定為: Teacher_Course22/audio/檔名
     """
-    file_map = {}
-    # 從當前目錄 (.) 開始，向下搜尋每一層資料夾
-    for root, dirs, files in os.walk("."):
-        for file in files:
-            if file.lower().endswith(".m4a"):
-                # 記錄檔名(小寫)與完整路徑的對應
-                file_map[file.lower()] = os.path.join(root, file)
-    return file_map
-
-def safe_play_audio(filename):
-    """
-    播放音檔的安全函式
-    1. 自動去地圖中找路徑
-    2. 如果找不到，顯示溫馨提示
-    """
-    if not filename:
-        return
-
-    # 取得檔案地圖
-    audio_map = get_audio_file_map()
-    target_key = filename.lower()
-
-    # 檢查檔案是否存在於地圖中
-    if target_key in audio_map:
-        full_path = audio_map[target_key]
-        try:
-            with open(full_path, "rb") as f:
+    # 這裡直接指定路徑，不使用自動搜尋
+    file_path = f"Teacher_Course22/audio/{filename}"
+    
+    # 嘗試開啟並播放
+    try:
+        if os.path.exists(file_path):
+            with open(file_path, "rb") as f:
                 audio_bytes = f.read()
             st.audio(audio_bytes, format='audio/mp4')
-        except Exception as e:
-            st.error(f"播放失敗: {e}")
-    else:
-        # 找不到檔案時的處理
-        st.warning(f"⚠️ 找不到音檔: {filename}")
-        st.caption("請確認檔案是否已上傳到 GitHub 或專案資料夾中")
+        else:
+            st.error(f"找不到檔案: {file_path}")
+    except Exception as e:
+        st.error(f"播放錯誤: {e}")
 
 # --- 0. 系統配置 ---
-st.set_page_config(page_title="Kaolahan 所喜歡的", page_icon="🍲", layout="centered")
+st.set_page_config(page_title="Kaolahan", page_icon="🍲", layout="centered")
 
-# --- CSS 美化 (改為暖橘色系，對應 Unit 18 的排版) ---
+# --- CSS 美化 (沿用您上傳的樣式架構，僅調整配色為暖色系) ---
 st.markdown("""
     <style>
     body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
@@ -99,16 +75,16 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- 2. 資料庫 (Kaolahan 內容) ---
-# 注意：dateng.m4a 和 kohaw.m4a 在您的上傳清單中缺席，這裡保留是為了完整性
+# --- 2. 資料庫 (檔名已對應您上傳的檔案) ---
 vocab_data = [
     {"amis": "Kaolahan", "chi": "所喜歡的", "icon": "❤️", "source": "核心單字", "audio": "kaolahan.m4a"},
     {"amis": "Facidol", "chi": "麵包樹果", "icon": "🍈", "source": "食材", "audio": "facidol.m4a"},
     {"amis": "Haca", "chi": "也 / 亦", "icon": "➕", "source": "連接詞", "audio": "haca.m4a"},
     {"amis": "Maemin", "chi": "全部 / 所有的", "icon": "💯", "source": "數量", "audio": "maemin.m4a"},
     {"amis": "Sikaen", "chi": "菜餚 / 配菜", "icon": "🍱", "source": "食物", "audio": "sikaen.m4a"},
-    {"amis": "Dateng", "chi": "菜 / 野菜", "icon": "🥬", "source": "食物", "audio": "dateng.m4a"}, # 缺檔
-    {"amis": "Kohaw", "chi": "湯", "icon": "🍲", "source": "食物", "audio": "kohaw.m4a"},   # 缺檔
+    # 注意：dateng.m4a 和 kohaw.m4a 您未上傳，若無檔案按播放會顯示錯誤
+    {"amis": "Dateng", "chi": "菜 / 野菜", "icon": "🥬", "source": "食物", "audio": "dateng.m4a"},
+    {"amis": "Kohaw", "chi": "湯", "icon": "🍲", "source": "食物", "audio": "kohaw.m4a"},
     {"amis": "Mato’asay", "chi": "老人 / 長輩", "icon": "👵", "source": "人物", "audio": "matoasay.m4a"},
 ]
 
@@ -121,7 +97,7 @@ sentences = [
     {"amis": "O facidol i, o tadakaolahan haca no ’Amis.", "chi": "麵包樹果也是阿美族人最愛。", "icon": "🍈", "source": "文化", "audio": "sentence_06.m4a"},
 ]
 
-# --- 3. 隨機題庫 (Kaolahan 內容) ---
+# --- 3. 隨機題庫 ---
 raw_quiz_pool = [
     {
         "q": "「麵包樹果」的阿美語怎麼說？",
@@ -174,7 +150,7 @@ raw_quiz_pool = [
     }
 ]
 
-# --- 4. 狀態初始化 (Unit 18 洗牌邏輯) ---
+# --- 4. 狀態初始化 (洗牌邏輯) ---
 if 'init' not in st.session_state:
     st.session_state.score = 0
     st.session_state.current_q_idx = 0
@@ -213,7 +189,7 @@ with tab1:
             </div>
             """, unsafe_allow_html=True)
             if st.button(f"🔊 播放", key=f"btn_vocab_{i}"):
-                safe_play_audio(word['audio'])
+                play_local_audio(word['audio'])
 
     st.markdown("---")
     st.subheader("🗣️ 實用句型")
@@ -225,7 +201,7 @@ with tab1:
         </div>
         """, unsafe_allow_html=True)
         if st.button(f"▶️ 朗讀句子", key=f"btn_sent_{i}"):
-            safe_play_audio(sent['audio'])
+            play_local_audio(sent['audio'])
 
 # === Tab 2: 測驗模式 ===
 with tab2:
@@ -244,7 +220,7 @@ with tab2:
         # 播放題目語音
         if q_data.get('audio'):
             if st.button("🔊 聽題目發音", key=f"quiz_audio_{current_idx}"):
-                safe_play_audio(q_data['audio'])
+                play_local_audio(q_data['audio'])
         
         option_cols = st.columns(len(q_data['shuffled_options']))
         
